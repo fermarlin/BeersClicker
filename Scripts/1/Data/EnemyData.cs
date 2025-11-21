@@ -14,6 +14,8 @@ public class EnemyData
     public int m_percentageStrongAttack;
 
     public int m_currentLife;
+    public int m_timeBetweenAttacks;
+    public int m_maxLife;
 
     public EnemyData(string name, int damage, int defense, int maxLife, int rewardExperience, float timeBetweenAttacks, int percentageStrongAttack)
     {

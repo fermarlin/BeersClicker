@@ -22,8 +22,8 @@ public class PlayerItemMonoBehavior : MonoBehaviour
 
         if (Input.GetMouseButtonDown(0) && m_counterRoomTime > m_timeToChangeRomm)
         {
-            //m_gameManager.ApplyItem();
-            //m_gameManager.ChangeRoom();
+            m_gameManager.ApplyItem(10);
+            m_gameManager.ChangeRoom();
         }
     }
 }

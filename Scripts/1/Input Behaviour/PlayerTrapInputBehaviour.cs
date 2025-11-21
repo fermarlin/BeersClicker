@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
-public class NewMonoBehaviourScript : MonoBehaviour
+public class PlayerTrapInputBehaviour : MonoBehaviour
 {
     public GameManager m_gameManager;
 
@@ -20,10 +20,10 @@ public class NewMonoBehaviourScript : MonoBehaviour
     {
         m_counterRoomTime += Time.time;
 
-        if (Input.GetMouseButtonDown(0) && m_counterRoomTime > m_timeToChangeRomm)
+        if (Input.GetMouseButtonDown(0) && m_counterRoomTime >= m_timeToChangeRomm)
         {
-            //m_gameManager.ApplyTrap);
-            //m_gameManager.ChangeRoom();
+            m_gameManager.ApplyTrap(15);
+            m_gameManager.ChangeRoom();
         }
     }
 }

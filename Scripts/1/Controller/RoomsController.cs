@@ -1,4 +1,6 @@
 using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
 
 public class RoomsController : MonoBehaviour
 {
@@ -7,19 +9,45 @@ public class RoomsController : MonoBehaviour
     public GameObject m_trapRoom;
 
     public SpriteRenderer m_enemySprite;
-    public GameObject m_itemSprite;
-    public GameObject m_trapSprite;
+    public SpriteRenderer m_itemSprite;
+    public SpriteRenderer m_trapSprite;
 
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public void SetRoom(EnemyData data, Sprite sprite)
     {
-        
+        m_enemyRoom.SetActive(true);
+        m_itemRoom.SetActive(false);
+        m_trapRoom.SetActive(false);
+        m_enemyRoom.GetComponent<EnemyBehaviour>().SetEnemy(data);
+        m_enemySprite.sprite = sprite;
     }
 
-    // Update is called once per frame
-    void Update()
+    public void SetRoom(TrapData data, Sprite sprite)
     {
-        
+        m_enemyRoom.SetActive(false);
+        m_itemRoom.SetActive(true);
+        m_trapRoom.SetActive(false);
+
+        m_trapSprite.sprite = sprite;
+    }
+
+    public void SetRoom(ItemData data, Sprite sprite)
+    {
+        m_enemyRoom.SetActive(false);
+        m_itemRoom.SetActive(false);
+        m_trapRoom.SetActive(true);
+        m_itemSprite.sprite = sprite;
+    }
+
+    public void DisableRooms()
+    {
+        m_enemyRoom.SetActive(false);
+        m_itemRoom.SetActive(false);
+        m_trapRoom.SetActive(false);
+    }
+
+    public GameObject GetEnemyRoom()
+    {
+        return m_enemyRoom;
     }
 }

@@ -27,7 +27,7 @@ public class PlayerEnemyInputBehavout : MonoBehaviour
         }
         if (Input.GetMouseButtonUp(0) && (Time.time - m_counterButtomTime >= 0.25f))
         {
-            //m_gameManager.PlayerStrongAttack();
+            m_gameManager.PlayerStrongAttack();
         }
     }
 }

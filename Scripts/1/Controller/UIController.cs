@@ -9,6 +9,7 @@ public class UIController : MonoBehaviour
     public GameObject m_startButtom;
     public Image m_enemyLife;
     public Image m_playerLife;
+    public GameObject gameOverScreen;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -44,6 +45,6 @@ public class UIController : MonoBehaviour
 
     public void PlayerLifeBar (int amount, int maxLife)
     {
-        m_playerLife.fillAmount = amount / maxLife;
+        m_playerLife.fillAmount = (float)amount / (float)maxLife;
     }
 }
