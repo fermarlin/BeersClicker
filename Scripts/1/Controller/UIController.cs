@@ -11,18 +11,6 @@ public class UIController : MonoBehaviour
     public Image m_playerLife;
     public GameObject gameOverScreen;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     public void EnableGameUI (bool isActive)
     {
         m_gameUI.SetActive(isActive);
@@ -40,7 +28,7 @@ public class UIController : MonoBehaviour
 
     public void EnemyLifeBar (int amount, int maxLife)
     {
-        m_enemyLife.fillAmount = amount / maxLife;
+        m_enemyLife.fillAmount = (float)amount /(float)maxLife;
     }
 
     public void PlayerLifeBar (int amount, int maxLife)

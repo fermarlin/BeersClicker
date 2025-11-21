@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController
 {
     private int m_damage;
     private int m_maxLife;
@@ -23,20 +23,22 @@ public class PlayerController : MonoBehaviour
 
         if (currentDamage > 0)
         {
-            m_currentLife -= damage - m_defense;
-            Debug.Log("AY NIGGA");
+            m_currentLife -= currentDamage;
+            Debug.Log("Daño recibido: " + currentDamage);
         }
     }
+
     public void HealDamage(int heal)
     {
         m_currentLife += heal;
-        
+
+        if (m_currentLife > m_maxLife)
+            m_currentLife = m_maxLife;
     }
 
     public int Attack(EnemyData enemy)
     {
         int damageAux = m_damage;
-
         return damageAux;
     }
 
@@ -52,23 +54,7 @@ public class PlayerController : MonoBehaviour
 
     public bool IsDied()
     {
-        if (m_currentLife < 0)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        // Mejor <= 0 para que 0 de vida ya cuente como muerto
+        return m_currentLife <= 0;
     }
 }

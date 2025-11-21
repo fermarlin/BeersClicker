@@ -7,25 +7,37 @@ public class EnemyBehaviour : MonoBehaviour
     public GameManager m_gameManager;
     public EnemyData m_enemyData;
     public SpriteRenderer m_sprite;
-    public float m_counterTime;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        m_counterTime = 0;
-    }
+    private Coroutine m_attackCoroutine;
+
 
     public void SetEnemy(EnemyData enemyData)
     {
         m_enemyData = enemyData;
+
+        if (m_attackCoroutine != null)
+            StopCoroutine(m_attackCoroutine);
+
+        m_attackCoroutine = StartCoroutine(AttackLoop());
     }
+
+    IEnumerator AttackLoop()
+    {
+        while (true)
+        {
+            float delay = m_enemyData.m_timeBetweenAttacks;
+            yield return new WaitForSeconds(delay);
+
+            Attack();
+        }
+    }
+
 
     public void Greet()
     {
         Debug.Log("Un enemigo ha aparecido es un " + m_enemyData.m_name + "!");
         Debug.Log("Tiene una fuerza de " + m_enemyData.m_damage);
-        Debug.Log("Un enemigo ha aparecido es un " + m_enemyData.m_currentLife);
-
+        Debug.Log("Tiene una vida de " + m_enemyData.m_currentLife);
     }
 
     public void Attack()
@@ -37,10 +49,9 @@ public class EnemyBehaviour : MonoBehaviour
         {
             damage = m_enemyData.m_damage * 2;
         }
-
-        else 
-        { 
-            damage = m_enemyData.m_damage; 
+        else
+        {
+            damage = m_enemyData.m_damage;
         }
 
         m_gameManager.EnemyAttack(damage);
@@ -50,11 +61,10 @@ public class EnemyBehaviour : MonoBehaviour
     {
         int currentDamage = damage - m_enemyData.m_defense;
 
-        if (currentDamage > 0) 
+        if (currentDamage > 0)
         {
-            m_enemyData.m_currentLife -= damage - m_enemyData.m_defense;
+            m_enemyData.m_currentLife -= currentDamage;
             Debug.Log("AY");
-
         }
 
         if (m_enemyData.m_currentLife < 0)
@@ -65,24 +75,17 @@ public class EnemyBehaviour : MonoBehaviour
 
     public bool IsDie()
     {
-        if (m_enemyData.m_currentLife < 0)
-        {
-            return true;
-        }
-        else 
-        {
-            return false;   
-        }
+        return m_enemyData.m_currentLife < 0;
     }
 
-    void Update()
+    void OnDisable()
     {
-        m_counterTime += Time.deltaTime;
-
-        if (m_counterTime > m_enemyData.m_timeBetweenAttacks)
+        // Por si desactivas la room / enemigo, paramos la corutina
+        if (m_attackCoroutine != null)
         {
-            m_counterTime = 0;
-            Attack();
+            StopCoroutine(m_attackCoroutine);
+            m_attackCoroutine = null;
         }
     }
+
 }

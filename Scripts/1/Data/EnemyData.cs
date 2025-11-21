@@ -17,14 +17,14 @@ public class EnemyData
     public int m_timeBetweenAttacks;
     public int m_maxLife;
 
-    public EnemyData(string name, int damage, int defense, int maxLife, int rewardExperience, float timeBetweenAttacks, int percentageStrongAttack)
+    public EnemyData(string name, int damage, int defense, int maxLife, int rewardExperience, int timeBetweenAttacks, int percentageStrongAttack)
     {
         m_name = name;
         m_damage = damage;
         m_defense = defense;
-        m__maxLife = maxLife;
+        m_maxLife = maxLife;
         m_rewardExperience = rewardExperience;
-        _timeBetweenAttacks = timeBetweenAttacks;
+        m_timeBetweenAttacks = timeBetweenAttacks;
         m_percentageStrongAttack = percentageStrongAttack;
 
         m_currentLife = maxLife;
