@@ -67,7 +67,7 @@ public class EnemyBehaviour : MonoBehaviour
             Debug.Log("AY");
         }
 
-        if (m_enemyData.m_currentLife < 0)
+        if (m_enemyData.m_currentLife <= 0)
         {
             Debug.Log("IS DIE");
         }
@@ -75,7 +75,11 @@ public class EnemyBehaviour : MonoBehaviour
 
     public bool IsDie()
     {
-        return m_enemyData.m_currentLife < 0;
+        if(m_enemyData.m_currentLife <= 0){
+            StopCoroutine(m_attackCoroutine);
+            m_attackCoroutine = null;
+        }
+        return m_enemyData.m_currentLife <= 0;
     }
 
     void OnDisable()

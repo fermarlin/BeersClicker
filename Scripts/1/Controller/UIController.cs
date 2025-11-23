@@ -7,8 +7,8 @@ public class UIController : MonoBehaviour
 {
     public GameObject m_gameUI;
     public GameObject m_startButtom;
-    public Image m_enemyLife;
-    public Image m_playerLife;
+    public HealthBarUI m_enemyLife;
+    public HealthBarUI m_playerLife;
     public GameObject gameOverScreen;
 
     public void EnableGameUI (bool isActive)
@@ -23,16 +23,17 @@ public class UIController : MonoBehaviour
 
     public void EnableEnemyBar (bool isActive)
     {
+        m_enemyLife.transform.parent.gameObject.SetActive(isActive);
         m_enemyLife.gameObject.SetActive(isActive);
     }
 
     public void EnemyLifeBar (int amount, int maxLife)
     {
-        m_enemyLife.fillAmount = (float)amount /(float)maxLife;
+        m_enemyLife.UpdateHealthBar(amount, maxLife);
     }
 
     public void PlayerLifeBar (int amount, int maxLife)
     {
-        m_playerLife.fillAmount = (float)amount / (float)maxLife;
+        m_playerLife.UpdateHealthBar(amount, maxLife);
     }
 }

@@ -16,7 +16,8 @@ public class EnemyData
     public int m_currentLife;
     public int m_timeBetweenAttacks;
     public int m_maxLife;
-
+    public GameObject m_prefab;
+    
     public EnemyData(string name, int damage, int defense, int maxLife, int rewardExperience, int timeBetweenAttacks, int percentageStrongAttack)
     {
         m_name = name;
