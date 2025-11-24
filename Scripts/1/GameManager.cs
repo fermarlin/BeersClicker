@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using TMPro;
+using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour
 {
@@ -16,7 +17,9 @@ public class GameManager : MonoBehaviour
 
     private SpriteSelector m_spriteSelector;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    [SerializeField]
+    private List<EnemyData> m_enemyDefinitions;
+
     void Start()
     {
         m_spriteSelector = GetComponent<SpriteSelector>();
@@ -28,19 +31,20 @@ public class GameManager : MonoBehaviour
             .GetComponent<TextMeshProUGUI>();
     }
 
+    public bool IsGameOver()
+    {
+        return m_gameOver;
+    }
+
     public void StartGame()
     {
         GetComponent<AudioSource>().Play();
 
-        // CREAMOS EL LABERINTO QUE CONTIENE LAS HABITACIONES
         m_labyrinth = new LabyrinthData();
-
         int randomNum = Random.Range(3, 6);
 
-        // SE AÑADEN LAS HABITACIONES
         TrapData trap = new TrapData("Pinchos", -10);
         ItemData item = new ItemData("Item 1", 10, 0, 0);
-        EnemyData enemy = new EnemyData("Enemy 1", 15, 3, 60, 20, 2, 30);
         RoomData room;
 
         for (int i = 0; i < randomNum; i++)
@@ -63,14 +67,14 @@ public class GameManager : MonoBehaviour
                     break;
 
                 case 2:
-                    room = new RoomData(enemy);
+                    room = new RoomData(GetRandomEnemy());
                     m_labyrinth.AddRoom(room);
                     break;
             }
         }
 
-        // Última habitación fija (enemigo, por ejemplo)
-        room = new RoomData(enemy);
+        // Última habitación fija (enemigo)
+        room = new RoomData(GetRandomEnemy());
         m_labyrinth.AddRoom(room);
 
         // Jugador lógico
@@ -87,7 +91,6 @@ public class GameManager : MonoBehaviour
         m_points = 0;
         CheckPoints();
 
-        // Arranca el laberinto
         ChangeRoom();
     }
 
@@ -123,10 +126,7 @@ public class GameManager : MonoBehaviour
         {
             case RoomData.Roomtype.ENEMY:
                 m_uiController.EnableEnemyBar(true);
-                m_roomController.SetRoom(
-                    currentRoom.m_enemy,
-                    m_spriteSelector.GetEnemySpriteByName(currentRoom.m_enemy.m_name)
-                );
+                m_roomController.SetRoom(currentRoom.m_enemy);
                 break;
 
             case RoomData.Roomtype.ITEM:
@@ -151,11 +151,6 @@ public class GameManager : MonoBehaviour
     {
         yield return new WaitForSecondsRealtime(2.5f);
         m_gameOverScreen.SetActive(false);
-    }
-
-    void Update()
-    {
-        // Aquí no haces nada de momento
     }
 
     public void CheckPoints()
@@ -186,6 +181,7 @@ public class GameManager : MonoBehaviour
             if (enemyBehaviour.IsDie())
             {
                 Debug.Log("El enemigo ha sido derrotado");
+                m_roomController.DestroyCurrentEnemy();   // <- elimina el prefab
                 ChangeRoom();
             }
         }
@@ -213,6 +209,7 @@ public class GameManager : MonoBehaviour
             if (enemyBehaviour.IsDie())
             {
                 Debug.Log("El enemigo ha sido derrotado");
+                m_roomController.DestroyCurrentEnemy();   // <- elimina el prefab
                 ChangeRoom();
             }
         }
@@ -220,6 +217,7 @@ public class GameManager : MonoBehaviour
 
     public void EnemyAttack(int damage)
     {
+        Debug.Log($"[EnemyAttack] El jugador recibe {damage} de daño.");
         m_player.ReceiveDamage(damage);
         m_uiController.PlayerLifeBar(m_player.GetCurrentLife(), m_player.GetMaxLife());
 
@@ -235,6 +233,18 @@ public class GameManager : MonoBehaviour
 
             m_gameOver = true;
         }
+    }
+
+    private EnemyData GetRandomEnemy()
+    {
+        if (m_enemyDefinitions == null || m_enemyDefinitions.Count == 0)
+        {
+            Debug.LogWarning("No hay enemigos definidos en m_enemyDefinitions.");
+            return null;
+        }
+
+        int index = Random.Range(0, m_enemyDefinitions.Count);
+        return new EnemyData(m_enemyDefinitions[index]);
     }
 
     public void ApplyTrap(int damage)

@@ -6,54 +6,86 @@ public class EnemyBehaviour : MonoBehaviour
 {
     public GameManager m_gameManager;
     public EnemyData m_enemyData;
-    public SpriteRenderer m_sprite;
 
     private Coroutine m_attackCoroutine;
 
+    void Awake()
+    {
+        // Por si se te olvida arrastrarlo en el inspector
+        if (m_gameManager == null)
+            m_gameManager = FindFirstObjectByType<GameManager>();
+    }
 
     public void SetEnemy(EnemyData enemyData)
     {
         m_enemyData = enemyData;
 
+        if (m_enemyData != null && m_enemyData.m_currentLife <= 0)
+            m_enemyData.ResetLife();
+
         if (m_attackCoroutine != null)
             StopCoroutine(m_attackCoroutine);
 
-        m_attackCoroutine = StartCoroutine(AttackLoop());
+        if (m_enemyData != null)
+            m_attackCoroutine = StartCoroutine(AttackLoop());
     }
 
     IEnumerator AttackLoop()
     {
         while (true)
         {
-            float delay = m_enemyData.m_timeBetweenAttacks;
+            if (m_enemyData == null || m_enemyData.m_currentLife <= 0)
+            {
+                StopAttackLoop();
+                yield break;
+            }
+
+            if (m_gameManager != null && m_gameManager.IsGameOver())
+            {
+                StopAttackLoop();
+                yield break;
+            }
+
+            float delay = Mathf.Max(0.1f, m_enemyData.m_timeBetweenAttacks);
             yield return new WaitForSeconds(delay);
 
-            Attack();
+            if (m_enemyData == null || m_enemyData.m_currentLife <= 0)
+            {
+                StopAttackLoop();
+                yield break;
+            }
+
+            if (m_gameManager != null && !m_gameManager.IsGameOver())
+            {
+                Attack();
+            }
         }
     }
 
+    private void StopAttackLoop()
+    {
+        if (m_attackCoroutine != null)
+        {
+            StopCoroutine(m_attackCoroutine);
+            m_attackCoroutine = null;
+        }
+    }
 
     public void Greet()
     {
-        Debug.Log("Un enemigo ha aparecido es un " + m_enemyData.m_name + "!");
-        Debug.Log("Tiene una fuerza de " + m_enemyData.m_damage);
-        Debug.Log("Tiene una vida de " + m_enemyData.m_currentLife);
+        Debug.Log($"Un enemigo ha aparecido: {m_enemyData.m_name}");
+        Debug.Log($"Fuerza: {m_enemyData.m_damage}");
+        Debug.Log($"Vida: {m_enemyData.m_currentLife}/{m_enemyData.m_maxLife}");
     }
 
     public void Attack()
     {
         int attackValue = Random.Range(0, 100);
-        int damage = 0;
+        int damage = (attackValue <= m_enemyData.m_percentageStrongAttack)
+            ? m_enemyData.m_damage * 2
+            : m_enemyData.m_damage;
 
-        if (attackValue <= m_enemyData.m_percentageStrongAttack)
-        {
-            damage = m_enemyData.m_damage * 2;
-        }
-        else
-        {
-            damage = m_enemyData.m_damage;
-        }
-
+        Debug.Log($"[Enemy] {m_enemyData.m_name} ataca por {damage} de daño.");
         m_gameManager.EnemyAttack(damage);
     }
 
@@ -64,32 +96,28 @@ public class EnemyBehaviour : MonoBehaviour
         if (currentDamage > 0)
         {
             m_enemyData.m_currentLife -= currentDamage;
-            Debug.Log("AY");
+            Debug.Log($"[Enemy] AY, vida actual: {m_enemyData.m_currentLife}");
         }
 
         if (m_enemyData.m_currentLife <= 0)
         {
-            Debug.Log("IS DIE");
+            Debug.Log("[Enemy] IS DIE");
+            Die();
         }
+    }
+
+    private void Die()
+    {
+        StopAttackLoop();
     }
 
     public bool IsDie()
     {
-        if(m_enemyData.m_currentLife <= 0){
-            StopCoroutine(m_attackCoroutine);
-            m_attackCoroutine = null;
-        }
-        return m_enemyData.m_currentLife <= 0;
+        return m_enemyData != null && m_enemyData.m_currentLife <= 0;
     }
 
     void OnDisable()
     {
-        // Por si desactivas la room / enemigo, paramos la corutina
-        if (m_attackCoroutine != null)
-        {
-            StopCoroutine(m_attackCoroutine);
-            m_attackCoroutine = null;
-        }
+        StopAttackLoop();
     }
-
 }
